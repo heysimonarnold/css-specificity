@@ -1,31 +1,44 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta property="og:url" content="https://css-specificity.smnarnold.com">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="CSS Specificity">
-    <meta property="og:description" content="A fun quiz to learn and practice CSS Specificity.">
-    <meta property="og:image" content="/src/img/og-en.png">
+    <meta property="og:url" content="https://css-specificity.smnarnold.com" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="CSS Specificity" />
+    <meta
+      property="og:description"
+      content="A fun quiz to learn and practice CSS Specificity."
+    />
+    <meta property="og:image" content="/src/img/og-en.png" />
     <title>CSS Specificity</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@350;700&family=Pattaya&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Exo+2:wght@350;700&family=Pattaya&display=swap"
+      rel="stylesheet"
+    />
     <style>
       #app,
-      .popup { opacity: 0; }
+      .popup {
+        opacity: 0;
+      }
     </style>
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2W5CCJT9VP"></script>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-2W5CCJT9VP"
+    ></script>
     <script>
       window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
 
-      gtag('config', 'G-2W5CCJT9VP');
+      gtag("config", "G-2W5CCJT9VP");
     </script>
   </head>
   <body>
@@ -42,7 +55,10 @@
       <header class="header">
         <h1 class="header__title">CSS Specificity</h1>
         <div class="header__intro">
-          <p><strong>Which CSS rule is the most specific? </strong>In short, what color will the element with the emoji ✋ be?</p>
+          <p>
+            <strong>Which CSS rule is the most specific? </strong>In short, what
+            color will the element with the emoji ✋ be?
+          </p>
         </div>
       </header>
 
@@ -64,7 +80,7 @@
         <div class="footer__options">
           <div class="footer__score">
             <span class="score__label">Score</span>
-            <strong class="score__value">0</strong> / 
+            <strong class="score__value">0</strong> /
             <strong class="score__total">0</strong>
           </div>
 
@@ -74,49 +90,102 @@
               <option value="fr">Français</option>
             </select>
           </div>
-  
+
           <div class="footer__reset">
             <button class="btn reset">Reset</button>
           </div>
         </div>
 
         <div class="footer__credits">
-          <p>Made by <a href='https://twitter.com/smnarnold' target='_blank'>@smnarnold</a> — come say hi!</p>
-          <p>Have feedback or questions? Please file an isssue on <a href='https://github.com/smnarnold/css-specificity' target='_blank'>Github repo</a>.</p>
+          <p>
+            Made by
+            <a href="https://twitter.com/smnarnold" target="_blank"
+              >@smnarnold</a
+            >
+            — come say hi!
+          </p>
+          <p>
+            Have feedback or questions? Please file an isssue on
+            <a
+              href="https://github.com/smnarnold/css-specificity"
+              target="_blank"
+              >Github repo</a
+            >.
+          </p>
         </div>
       </footer>
 
       <div class="popup">
         <div class="popup__wrapper">
           <div class="popup__header popup__header--success">
-            <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="thumbs-up" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="svg-inline--fa fa-thumbs-up fa-w-16 fa-3x"><path fill="currentColor" d="M104 224H24c-13.255 0-24 10.745-24 24v240c0 13.255 10.745 24 24 24h80c13.255 0 24-10.745 24-24V248c0-13.255-10.745-24-24-24zM64 472c-13.255 0-24-10.745-24-24s10.745-24 24-24 24 10.745 24 24-10.745 24-24 24zM384 81.452c0 42.416-25.97 66.208-33.277 94.548h101.723c33.397 0 59.397 27.746 59.553 58.098.084 17.938-7.546 37.249-19.439 49.197l-.11.11c9.836 23.337 8.237 56.037-9.308 79.469 8.681 25.895-.069 57.704-16.382 74.757 4.298 17.598 2.244 32.575-6.148 44.632C440.202 511.587 389.616 512 346.839 512l-2.845-.001c-48.287-.017-87.806-17.598-119.56-31.725-15.957-7.099-36.821-15.887-52.651-16.178-6.54-.12-11.783-5.457-11.783-11.998v-213.77c0-3.2 1.282-6.271 3.558-8.521 39.614-39.144 56.648-80.587 89.117-113.111 14.804-14.832 20.188-37.236 25.393-58.902C282.515 39.293 291.817 0 312 0c24 0 72 8 72 81.452z"></path></svg>
+            <svg
+              aria-hidden="true"
+              focusable="false"
+              data-prefix="fas"
+              data-icon="thumbs-up"
+              role="img"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 512 512"
+              class="svg-inline--fa fa-thumbs-up fa-w-16 fa-3x"
+            >
+              <path
+                fill="currentColor"
+                d="M104 224H24c-13.255 0-24 10.745-24 24v240c0 13.255 10.745 24 24 24h80c13.255 0 24-10.745 24-24V248c0-13.255-10.745-24-24-24zM64 472c-13.255 0-24-10.745-24-24s10.745-24 24-24 24 10.745 24 24-10.745 24-24 24zM384 81.452c0 42.416-25.97 66.208-33.277 94.548h101.723c33.397 0 59.397 27.746 59.553 58.098.084 17.938-7.546 37.249-19.439 49.197l-.11.11c9.836 23.337 8.237 56.037-9.308 79.469 8.681 25.895-.069 57.704-16.382 74.757 4.298 17.598 2.244 32.575-6.148 44.632C440.202 511.587 389.616 512 346.839 512l-2.845-.001c-48.287-.017-87.806-17.598-119.56-31.725-15.957-7.099-36.821-15.887-52.651-16.178-6.54-.12-11.783-5.457-11.783-11.998v-213.77c0-3.2 1.282-6.271 3.558-8.521 39.614-39.144 56.648-80.587 89.117-113.111 14.804-14.832 20.188-37.236 25.393-58.902C282.515 39.293 291.817 0 312 0c24 0 72 8 72 81.452z"
+              ></path>
+            </svg>
             <span class="congratulation">Congratulation!</span>
           </div>
 
           <div class="popup__header popup__header--fail">
-            <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="thumbs-down" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="svg-inline--fa fa-thumbs-down fa-w-16 fa-3x"><path fill="currentColor" d="M0 56v240c0 13.255 10.745 24 24 24h80c13.255 0 24-10.745 24-24V56c0-13.255-10.745-24-24-24H24C10.745 32 0 42.745 0 56zm40 200c0-13.255 10.745-24 24-24s24 10.745 24 24-10.745 24-24 24-24-10.745-24-24zm272 256c-20.183 0-29.485-39.293-33.931-57.795-5.206-21.666-10.589-44.07-25.393-58.902-32.469-32.524-49.503-73.967-89.117-113.111a11.98 11.98 0 0 1-3.558-8.521V59.901c0-6.541 5.243-11.878 11.783-11.998 15.831-.29 36.694-9.079 52.651-16.178C256.189 17.598 295.709.017 343.995 0h2.844c42.777 0 93.363.413 113.774 29.737 8.392 12.057 10.446 27.034 6.148 44.632 16.312 17.053 25.063 48.863 16.382 74.757 17.544 23.432 19.143 56.132 9.308 79.469l.11.11c11.893 11.949 19.523 31.259 19.439 49.197-.156 30.352-26.157 58.098-59.553 58.098H350.723C358.03 364.34 384 388.132 384 430.548 384 504 336 512 312 512z"></path></svg>
+            <svg
+              aria-hidden="true"
+              focusable="false"
+              data-prefix="fas"
+              data-icon="thumbs-down"
+              role="img"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 512 512"
+              class="svg-inline--fa fa-thumbs-down fa-w-16 fa-3x"
+            >
+              <path
+                fill="currentColor"
+                d="M0 56v240c0 13.255 10.745 24 24 24h80c13.255 0 24-10.745 24-24V56c0-13.255-10.745-24-24-24H24C10.745 32 0 42.745 0 56zm40 200c0-13.255 10.745-24 24-24s24 10.745 24 24-10.745 24-24 24-24-10.745-24-24zm272 256c-20.183 0-29.485-39.293-33.931-57.795-5.206-21.666-10.589-44.07-25.393-58.902-32.469-32.524-49.503-73.967-89.117-113.111a11.98 11.98 0 0 1-3.558-8.521V59.901c0-6.541 5.243-11.878 11.783-11.998 15.831-.29 36.694-9.079 52.651-16.178C256.189 17.598 295.709.017 343.995 0h2.844c42.777 0 93.363.413 113.774 29.737 8.392 12.057 10.446 27.034 6.148 44.632 16.312 17.053 25.063 48.863 16.382 74.757 17.544 23.432 19.143 56.132 9.308 79.469l.11.11c11.893 11.949 19.523 31.259 19.439 49.197-.156 30.352-26.157 58.098-59.553 58.098H350.723C358.03 364.34 384 388.132 384 430.548 384 504 336 512 312 512z"
+              ></path>
+            </svg>
             Oh oh!
           </div>
 
           <div class="popup__header popup__header--end">
-            <svg aria-hidden="true" focusable="false" data-prefix="fas" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M0 0h24v24H0V0z"/>
-              <path fill="var(--highlight)" d="M21 3h-6.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H3v18h18V3zm-9 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm-2 14l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+            <svg
+              aria-hidden="true"
+              focusable="false"
+              data-prefix="fas"
+              role="img"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+            >
+              <path fill="currentColor" d="M0 0h24v24H0V0z" />
+              <path
+                fill="var(--highlight)"
+                d="M21 3h-6.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H3v18h18V3zm-9 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm-2 14l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"
+              />
             </svg>
             <span class="popup__quiz-completed">Quiz completed!</span>
           </div>
 
           <div class="popup__main"></div>
-          
+
           <div class="popup__footer">
             <button class="popup__next">Next question</button>
             <button class="popup__show-result">Show Results</button>
-            <button class="popup__random-questions">Questions in random order</button>
+            <button class="popup__random-questions">
+              Questions in random order
+            </button>
           </div>
         </div>
       </div>
     </div>
 
-    <script type="module" src="/main.js"></script>
+    <script type="module" src="./main.js"></script>
   </body>
 </html>
