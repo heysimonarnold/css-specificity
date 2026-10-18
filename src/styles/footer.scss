@@ -1,4 +1,4 @@
-@use './src/styles/_variables';
+@use "./_variables";
 
 .footer {
   position: relative;
@@ -36,16 +36,22 @@
 
   &__credits {
     margin-top: var(--gutter);
-    
+
     p {
       margin: 0.5em 0;
 
-      &:first-child { margin-top: 0; }
-      &:last-child { margin-bottom: 0; }
+      &:first-child {
+        margin-top: 0;
+      }
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
   }
 
-  .is-ready & { animation: fadein 0.75s 0.5s forwards; }
+  .is-ready & {
+    animation: fadein 0.75s 0.5s forwards;
+  }
 
   @media (min-width: variables.$sm) {
     padding: 0;
@@ -57,9 +63,15 @@
     }
 
     &__score,
-    &__lang { margin: 0; }
+    &__lang {
+      margin: 0;
+    }
 
-    &__score { order: 1; }
-    &__lang { order: 2; }
+    &__score {
+      order: 1;
+    }
+    &__lang {
+      order: 2;
+    }
   }
 }

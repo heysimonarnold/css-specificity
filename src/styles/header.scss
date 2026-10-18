@@ -1,4 +1,4 @@
-@use './src/styles/_variables';
+@use "./_variables";
 
 .header {
   padding: 0 var(--gutter);
@@ -7,12 +7,14 @@
   &__title {
     color: var(--highlight);
     font-size: 3rem;
-    font-family: 'Pattaya', sans-serif;
+    font-family: "Pattaya", sans-serif;
     text-align: center;
     margin-top: 0;
   }
 
-  .is-ready & { animation: fadein 0.75s forwards; } 
+  .is-ready & {
+    animation: fadein 0.75s forwards;
+  }
 
   @media (min-width: variables.$sm) {
     padding: 0;

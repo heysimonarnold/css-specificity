@@ -1,221 +1,336 @@
-import './style.scss';
-import * as levelsArr from './src/data/levels.json';
-import Level from './src/scripts/level.js';
+import "./style.scss";
 
-import ogen from './src/img/og-en.png';
-import ogfr from './src/img/og-fr.png';
+import levels from "./src/data/levels.json";
+import Level from "./src/scripts/level.js";
+
+import ogEn from "./src/img/og-en.png";
+import ogFr from "./src/img/og-fr.png";
+
+const SUPPORTED_LANGUAGES = ["en", "fr"];
+const STORAGE_KEYS = {
+  lang: "lang",
+  level: "level",
+  score: "score",
+};
+
+const POPUP_CLASSES = [
+  "popup--success",
+  "popup--fail",
+  "popup--end",
+  "popup--no-more-question",
+];
 
 class Game {
   constructor() {
-    this.levelsArr = levelsArr.content;
+    this.levelsArr = [...levels.content];
     this.level = 0;
     this.score = 0;
-    this.supportedLanguages = ['en', 'fr']
-    this.lang = navigator.language.substring(0,2).toLowerCase();
-    this.lang = this.supportedLanguages.includes(this.lang) ? this.lang : 'en'; // Fallback en
+    this.data = null;
+    this.loadRequest = null;
 
-    this.dom = {
-      app: document.querySelector('#app'),
-      level: {
-        label: document.querySelector('.level__label'),
-        current: document.querySelector('.level__current'),
-        of: document.querySelector('.level__of'),
-        total: document.querySelector('.level__total')
-      },
-      header: {
-        el: document.querySelector('.header'),
-        title: document.querySelector('.header__title'),
-        intro: document.querySelector('.header__intro')
-      },
-      footer: {
-        el: document.querySelector('.footer'),
-        reset: document.querySelector('.reset'),
-        credits: document.querySelector('.footer__credits')
-      },
-      score: {
-        label: document.querySelector('.score__label'),
-        value: document.querySelector('.score__value'),
-        total: document.querySelector('.score__total'),
-      },
-      lang: document.querySelector('.lang'),
-      popup: {
-        el: document.querySelector('.popup'),
-        main: document.querySelector('.popup__main'),
-        congratulation: document.querySelector('.congratulation'),
-        quizCompleted: document.querySelector('.popup__quiz-completed'),
-        next: document.querySelector('.popup__next'),
-        showResult:document.querySelector('.popup__show-result'),
-        randomQuestions: document.querySelector('.popup__random-questions')
-      },
-      main: document.querySelector('.main'),
-    };
+    this.lang = this.getBrowserLanguage();
+    this.dom = this.getDOM();
+    this.meta = this.getMetaElements();
 
     this.init();
   }
 
+  getBrowserLanguage() {
+    const language = navigator.language.slice(0, 2).toLowerCase();
+
+    return SUPPORTED_LANGUAGES.includes(language) ? language : "en";
+  }
+
+  getDOM() {
+    const query = (selector) => document.querySelector(selector);
+
+    return {
+      app: query("#app"),
+      main: query(".main"),
+      lang: query(".lang"),
+
+      level: {
+        label: query(".level__label"),
+        current: query(".level__current"),
+        of: query(".level__of"),
+        total: query(".level__total"),
+      },
+
+      header: {
+        el: query(".header"),
+        title: query(".header__title"),
+        intro: query(".header__intro"),
+      },
+
+      footer: {
+        el: query(".footer"),
+        reset: query(".reset"),
+        credits: query(".footer__credits"),
+      },
+
+      score: {
+        label: query(".score__label"),
+        value: query(".score__value"),
+        total: query(".score__total"),
+      },
+
+      popup: {
+        el: query(".popup"),
+        main: query(".popup__main"),
+        congratulation: query(".congratulation"),
+        quizCompleted: query(".popup__quiz-completed"),
+        next: query(".popup__next"),
+        showResult: query(".popup__show-result"),
+        randomQuestions: query(".popup__random-questions"),
+      },
+    };
+  }
+
+  getMetaElements() {
+    const query = (selector) => document.querySelector(selector);
+
+    return {
+      title: query('meta[property="og:title"]'),
+      description: query('meta[property="og:description"]'),
+      image: query('meta[property="og:image"]'),
+    };
+  }
+
   init() {
     this.loadGame();
-    this.loadData();
     this.bindEvents();
+    this.loadData();
   }
 
   loadGame() {
-    const savedLang = localStorage.getItem('lang');
-    if (savedLang !== null) { this.lang = savedLang; }
+    const savedLang = localStorage.getItem(STORAGE_KEYS.lang);
+    const savedLevel = Number(localStorage.getItem(STORAGE_KEYS.level));
+    const savedScore = Number(localStorage.getItem(STORAGE_KEYS.score));
 
-    this.dom.lang.value = this.lang;
-
-    const savedLevel = localStorage.getItem('level');
-    if (savedLevel !== null) { this.level = parseInt(savedLevel); }
-
-    const savedScore = localStorage.getItem('score');
-    if (savedScore !== null) { this.score = parseInt(savedScore); }
-
-    if (this.level >= this.levelsArr.length -1) {
-      this.level = this.score = 0;
+    if (SUPPORTED_LANGUAGES.includes(savedLang)) {
+      this.lang = savedLang;
     }
 
+    this.level =
+      Number.isInteger(savedLevel) && savedLevel >= 0 ? savedLevel : 0;
+
+    this.score =
+      Number.isFinite(savedScore) && savedScore >= 0 ? savedScore : 0;
+
+    // Restart if the saved game has already reached the end.
+    if (this.level >= this.levelsArr.length) {
+      this.level = 0;
+      this.score = 0;
+    }
+
+    this.dom.lang.value = this.lang;
     this.showLevel();
   }
 
-  loadData() {
-    fetch(`./src/data/${this.lang}.json`)
-    .then(res => res.json())
-    .then(data => {
-      this.data = data;
+  async loadData() {
+    // Cancel an earlier request if the language changes again.
+    this.loadRequest?.abort();
 
+    const controller = new AbortController();
+    this.loadRequest = controller;
+
+    try {
+      const response = await fetch(`./src/data/${this.lang}.json`, {
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Unable to load language data: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      // Ignore a response that is no longer the active request.
+      if (this.loadRequest !== controller) return;
+
+      this.data = data;
       this.i18n();
       this.goToLevel(this.level);
-      this.dom.app.classList.add('is-ready');
-    }) 
+
+      this.dom.app.classList.add("is-ready");
+    } catch (error) {
+      if (error.name === "AbortError") return;
+
+      console.error("Unable to load the game:", error);
+      this.dom.app.classList.remove("is-ready");
+    }
   }
 
   changeLang() {
-    this.lang = this.dom.lang.value;
-    localStorage.setItem('lang', this.lang);
-    this.dom.app.classList.remove('is-ready');
+    const language = this.dom.lang.value;
+
+    if (!SUPPORTED_LANGUAGES.includes(language)) return;
+
+    this.lang = language;
+    localStorage.setItem(STORAGE_KEYS.lang, language);
+
+    this.dom.app.classList.remove("is-ready");
     this.loadData();
   }
 
   i18n() {
-    document.documentElement.lang = this.lang;
-    document.querySelector('meta[property="og:title"]').content = this.data.title;
-    document.querySelector('meta[property="og:description"]').content = this.data.slogan;
-    if(this.lang === 'fr') {
-      document.querySelector('meta[property="og:image"]').content = ogfr;
-    } else {
-      document.querySelector('meta[property="og:image"]').content = ogen;
+    const { data, lang, dom, meta } = this;
+
+    document.documentElement.lang = lang;
+    document.title = data.title;
+
+    if (meta.title) meta.title.content = data.title;
+    if (meta.description) meta.description.content = data.slogan;
+
+    if (meta.image) {
+      meta.image.content = lang === "fr" ? ogFr : ogEn;
     }
 
-    this.dom.level.label.innerText = this.data.level;
-    this.dom.level.of.innerText = this.data.of;
-    this.dom.header.title.innerText = document.title = this.data.title;
-    this.dom.header.intro.innerHTML = this.data.intro;
-    this.dom.score.label.innerText = this.data.score;
-    this.dom.footer.reset.innerHTML = this.data.reset;
-    this.dom.footer.credits.innerHTML = this.data.credits;
-    this.dom.popup.congratulation.innerText = this.data.congratulation;
-    this.dom.popup.quizCompleted.innerText = this.data['quiz-completed'];
-    this.dom.popup.next.innerText = this.data['next-question'];
-    this.dom.popup.showResult.innerText = this.data['show-result'];
-    this.dom.popup.randomQuestions.innerText = this.data['questions-in-random-order'];
+    dom.level.label.textContent = data.level;
+    dom.level.of.textContent = data.of;
+
+    dom.header.title.textContent = data.title;
+    dom.header.intro.innerHTML = data.intro;
+
+    dom.score.label.textContent = data.score;
+
+    dom.footer.reset.innerHTML = data.reset;
+    dom.footer.credits.innerHTML = data.credits;
+
+    dom.popup.congratulation.textContent = data.congratulation;
+    dom.popup.quizCompleted.textContent = data["quiz-completed"];
+    dom.popup.next.textContent = data["next-question"];
+    dom.popup.showResult.textContent = data["show-result"];
+    dom.popup.randomQuestions.textContent = data["questions-in-random-order"];
   }
 
   bindEvents() {
-    document.body.addEventListener('success', () => this.successPopup(), false);
-    document.body.addEventListener('fail', () => this.failPopup(), false);
-    
-    this.dom.footer.reset.addEventListener('click', () => this.reset(), false);
-    this.dom.lang.addEventListener('change', () => this.changeLang(), false);
-    this.dom.popup.next.addEventListener('click', () => this.nextLevel(), false);
-    this.dom.popup.showResult.addEventListener('click', () => this.setPopupEnd(), false);
-    this.dom.popup.randomQuestions.addEventListener('click', () => this.randomizeQuestions(), false);
+    const { dom } = this;
+
+    document.body.addEventListener("success", () => this.successPopup());
+
+    document.body.addEventListener("fail", () => this.failPopup());
+
+    dom.footer.reset.addEventListener("click", () => this.reset());
+
+    dom.lang.addEventListener("change", () => this.changeLang());
+
+    dom.popup.next.addEventListener("click", () => this.nextLevel());
+
+    dom.popup.showResult.addEventListener("click", () => this.setPopupEnd());
+
+    dom.popup.randomQuestions.addEventListener("click", () =>
+      this.randomizeQuestions(),
+    );
+
+    window.addEventListener("popstate", () => {
+      const slug = new URLSearchParams(location.search).get("level");
+      const index = this.levelsArr.findIndex((level) => level.slug === slug);
+
+      if (index !== -1) this.goToLevel(index, false);
+    });
   }
 
-  goToLevel(level) {
+  goToLevel(level, updateHistory = true) {
+    if (!Number.isInteger(level)) return;
+    if (level < 0 || level >= this.levelsArr.length) return;
+    if (!this.data) return;
+
+    this.level = level;
+    localStorage.setItem(STORAGE_KEYS.level, String(level));
+
     this.showScore();
     this.clearPopup();
 
-    this.level = level;
-    localStorage.setItem('level', this.level);
+    if (updateHistory) {
+      history.pushState({}, "", `?level=${this.getLevelSlug(level)}`);
+    }
 
-    history.pushState({}, "", `?level=${this.getLevelSlug(this.level)}`);
+    const levelData = this.levelsArr[level];
+    const questions = this.data.questions[levelData.slug];
 
-    let levelObj = this.levelsArr[this.level];
-
-    new Level(levelObj, this.data.questions[levelObj.slug], this.dom.main, this.data);
+    new Level(levelData, questions, this.dom.main, this.data);
   }
-  
-  nextLevel() {
-    this.level++;
 
-    if (this.level < this.levelsArr.length) {
-      this.goToLevel(this.level);
+  nextLevel() {
+    if (this.level < this.levelsArr.length - 1) {
+      this.goToLevel(this.level + 1);
     }
   }
 
   getLevelSlug(level) {
-    return this.levelsArr[level].slug;
+    return this.levelsArr[level]?.slug;
   }
 
   showLevel() {
-    this.dom.level.current.innerText = this.level;
-    this.dom.level.total.innerText = this.levelsArr.length;
+    this.dom.level.current.textContent = this.level + 1;
+    this.dom.level.total.textContent = this.levelsArr.length;
   }
 
   showScore() {
-    localStorage.setItem('score', this.score);
-    this.dom.score.value.innerText = this.score;
-    this.dom.score.total.innerText = this.level;
-    this.dom.level.current.innerText = this.level + 1;
+    localStorage.setItem(STORAGE_KEYS.score, String(this.score));
+
+    this.dom.score.value.textContent = this.score;
+    this.dom.score.total.textContent = this.level;
+    this.showLevel();
   }
 
   reset() {
-    localStorage.clear();
-    this.level = this.score = 0;
-    this.goToLevel(this.level);
+    // Preserve the selected language and unrelated site storage.
+    localStorage.removeItem(STORAGE_KEYS.level);
+    localStorage.removeItem(STORAGE_KEYS.score);
+
+    this.level = 0;
+    this.score = 0;
+
+    if (this.data) {
+      this.goToLevel(0);
+    } else {
+      this.showLevel();
+    }
   }
 
   successPopup() {
     this.score++;
-
-    if(this.level == this.levelsArr.length - 1) {
-      this.dom.popup.el.classList.add('popup--no-more-question');
-    } else {
-      this.dom.popup.el.classList.remove('popup--no-more-question');
-    }
-
-    this.dom.popup.el.classList.add('popup--success');
+    this.showScore();
+    this.updatePopupState("success");
   }
 
   failPopup() {
-    if(this.level == this.levelsArr.length - 1) {
-      this.dom.popup.el.classList.add('popup--no-more-question');
-    } else {
-      this.dom.popup.el.classList.remove('popup--no-more-question');
-    }
+    this.updatePopupState("fail");
+  }
 
-    this.dom.popup.el.classList.add('popup--fail');
+  updatePopupState(result) {
+    const isLastLevel = this.level === this.levelsArr.length - 1;
+    const { popup } = this.dom;
+
+    popup.el.classList.toggle("popup--no-more-question", isLastLevel);
+
+    popup.el.classList.remove(
+      result === "success" ? "popup--fail" : "popup--success",
+    );
+
+    popup.el.classList.add(`popup--${result}`);
   }
 
   clearPopup() {
-    this.dom.popup.el.classList.remove('popup--success', 'popup--fail', 'popup--end', 'popup--no-more-question');
+    this.dom.popup.el.classList.remove(...POPUP_CLASSES);
   }
 
   setPopupEnd() {
-    this.level = this.levelsArr.length;
-
     this.showScore();
     this.clearPopup();
 
-    setTimeout(() => {
-      this.dom.popup.main.innerHTML = `
-        ${this.data['final-score']}:
-        <div class="final-score">${this.score} / ${this.levelsArr.length}</div>
-      `;
+    const { popup } = this.dom;
 
-      this.dom.popup.el.classList.add('popup--end');
-    }, 500);
+    popup.main.innerHTML = `
+      ${this.data["final-score"]}:
+      <div class="final-score">
+        ${this.score} / ${this.levelsArr.length}
+      </div>
+    `;
+
+    popup.el.classList.add("popup--end");
   }
 
   randomizeQuestions() {
@@ -223,12 +338,15 @@ class Game {
     this.reset();
   }
 
-  shuffleArray(arr) {
-    for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
+  shuffleArray(array) {
+    const shuffled = [...array];
+
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
-    return arr;
+
+    return shuffled;
   }
 }
 
