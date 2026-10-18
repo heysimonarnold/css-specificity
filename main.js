@@ -1,10 +1,17 @@
 import "./style.scss";
 
 import levels from "./src/data/levels.json";
+import enData from "./src/data/en.json";
+import frData from "./src/data/fr.json";
 import Level from "./src/scripts/level.js";
 
 import ogEn from "./src/img/og-en.png";
 import ogFr from "./src/img/og-fr.png";
+
+const LANGUAGE_DATA = {
+  en: enData,
+  fr: frData,
+};
 
 const SUPPORTED_LANGUAGES = ["en", "fr"];
 const STORAGE_KEYS = {
@@ -127,38 +134,14 @@ class Game {
     this.showLevel();
   }
 
-  async loadData() {
-    // Cancel an earlier request if the language changes again.
-    this.loadRequest?.abort();
+  loadData() {
+    const data = LANGUAGE_DATA[this.lang] ?? LANGUAGE_DATA.en;
 
-    const controller = new AbortController();
-    this.loadRequest = controller;
+    this.data = data;
+    this.i18n();
+    this.goToLevel(this.level);
 
-    try {
-      const response = await fetch(`./src/data/${this.lang}.json`, {
-        signal: controller.signal,
-      });
-
-      if (!response.ok) {
-        throw new Error(`Unable to load language data: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      // Ignore a response that is no longer the active request.
-      if (this.loadRequest !== controller) return;
-
-      this.data = data;
-      this.i18n();
-      this.goToLevel(this.level);
-
-      this.dom.app.classList.add("is-ready");
-    } catch (error) {
-      if (error.name === "AbortError") return;
-
-      console.error("Unable to load the game:", error);
-      this.dom.app.classList.remove("is-ready");
-    }
+    this.dom.app.classList.add("is-ready");
   }
 
   changeLang() {
