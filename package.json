@@ -15,7 +15,7 @@
   "bugs": {
     "url": "https://github.com/heysimonarnold/css-specificity/issues"
   },
-  "homepage": "https://github.com/heysimonarnold/css-specificity#readme",
+  "homepage": "https://heysimonarnold.github.io/css-specificity/",
   "devDependencies": {
     "vite": "^6.4.4"
   },
